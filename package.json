@@ -1,11 +1,28 @@
 {
   "name": "prodia.js",
-  "version": "2.1.5",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "description": "A simple and up to date wrapper for prodia api with all features included.",
+  "version": "3.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
-    "build"
+    "dist"
   ],
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.4"
+  },
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch"
+  },
   "keywords": [
     "prodia",
     "ai",
@@ -19,28 +36,16 @@
     "sdxl",
     "image2image",
     "face-swap",
-    "face-restore"
+    "face-restore",
+    "upscale"
   ],
-  "devDependencies": {},
-  "dependencies": {
-    "request": "^2.88.2"
-  },
   "author": "FlameFace",
   "license": "MIT",
-  "description": "A simple and up to date wrapper for prodia api with all features included",
   "repository": {
     "type": "git",
     "url": "https://github.com/unburn/prodia.js.git"
   },
   "bugs": {
     "url": "https://github.com/unburn/prodia.js/issues"
-  },
-  "homepage": "https://github.com/unburn/prodia.js#readme",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "funding": {
-    "type": "githubsponser",
-    "url": "https://github.com/sponsors/flameface"
   }
 }

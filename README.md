@@ -1,218 +1,155 @@
-# **About**
-A simple and up to date wrapper for **prodia** with all features included
+<img src="https://raw.githubusercontent.com/unburn/assets/main/prodia/prodia-header.png">
 
-# **Installation**
+***
+
+<p align="center">A simple and up to date wrapper for prodia api with all features included.</p>
+
+<p align="center">
+    <a href="https://github.com/unburn/prodia.js"><b>Github</b></a> •
+    <a href="https://discord.gg/66uGX7t4ww"><b>Support</b></a>
+</p>
+
+<div align="center">
+
+[![NPM Version](https://img.shields.io/npm/v/prodia.js?style=flat-square&color=%230059CD)](https://www.npmjs.com/package/prodia.js)
+[![NPM Downloads](https://img.shields.io/npm/dw/prodia.js?style=flat-square&color=%230059CD)](https://www.npmjs.com/package/prodia.js)
+[![NPM License](https://img.shields.io/npm/l/prodia.js?style=flat-square&color=%230059CD)](https://github.com/unburn/prodia.js/blob/main/LICENSE)
+[![GitHub Repo stars](https://img.shields.io/github/stars/unburn/prodia.js?style=flat-square&color=%230059CD)](https://github.com/unburn/prodia.js)
+
+</div>
+
+***
+
+# Installation
 ```
 npm install prodia.js
 ```
 
-# **Usage**
-## **Text to Image**
+# Usage
+For detailed **docs** about parameters and **api** key, go to https://prodia.com
 
+## Text to Image
 ```js
-const { Prodia } = require("prodia.js");
-const prodia = new Prodia("x-x-x-x-x"); // API KEY HERE
+import { Prodia } from "prodia.js"
 
-(async () => {
-    const generate = await prodia.generateImage({
-        prompt: "(masterpiece), (extremely intricate:1.3),, (realistic), portrait of a girl, the most beautiful in the world, (medieval armor), metal reflections, upper body, outdoors, intense sunlight, far away castle, professional photograph of a stunning woman detailed, sharp focus, dramatic, award winning, cinematic lighting, octane render, unreal engine, volumetrics dtx, (film grain, bokeh, blurry foreground, blurry background), crest on chest",
-        model: "absolutereality_v181.safetensors [3d9d4d2b]",
-        negative_prompt: "BadDream, (UnrealisticDream:1.3)",
-        sampler: "DPM++ SDE Karras",
-        cfg_scale: 9,
-        steps: 30,
-        aspect_ratio: "portrait"
+// ----- OR -----
+
+const { Prodia } = require("prodia.js");
+const { generateImage, wait } = Prodia("x-x-x-x-x");
+
+const input = async (prompt) => {
+    const result = await generateImage({
+        prompt: prompt,
+        model: "juggernaut_aftermath.safetensors [5e20c455]"
     })
 
-    while (generate.status !== "succeeded" && generate.status !== "failed") {
-        new Promise((resolve) => setTimeout(resolve, 250));
+    return await wait(result);
+}
 
-        const job = await prodia.getJob(generate.job);
-
-        if (job.status === "succeeded") {
-            console.log(job);
-            break;
-        }
-    }
-})()
+input("a photograph of an astronaut riding a horse in the sky").then(console.log)
 ```
 
-### Preview
-![SDGEN](https://raw.githubusercontent.com/unburn/prodia.js/main/assets/sdgen.png)
+> **Tip**: play with parameters like **negative_prompt**, **style_preset**, **steps** etc. to get awesome output.
+>
+> Know more about generation parameters **[here](https://docs.prodia.com/reference/generate)**
 
-## **Image to Image**
+![Image Example](https://raw.githubusercontent.com/unburn/assets/main/prodia/generate-example.png)
 
+## Transform Image
 ```js
 const { Prodia } = require("prodia.js");
-const prodia = new Prodia("x-x-x-x-x"); // API KEY HERE
+const { transform, wait } = Prodia("x-x-x-x-x");
 
-(async () => {
-    const generate = await prodia.transformImage({
-        imageUrl: "https://images.prodia.xyz/8f80512a-4d53-4e7b-b109-cbc27b49ef19.png",
-        prompt: "",
-        model: "absolutereality_v181.safetensors [3d9d4d2b]",
-        negative_prompt: "BadDream, (UnrealisticDream:1.3)",
-        sampler: "DPM++ SDE Karras",
-        cfg_scale: 9,
-        steps: 30,
-        width: 512,
-        height: 768
+const input = async (prompt) => {
+    const result = await transform({
+        imageUrl: "https://images.prodia.xyz/4d81be60-6cf2-417e-a800-eab097295f23.png",
+        prompt: prompt,
+        model: "juggernaut_aftermath.safetensors [5e20c455]"
     })
 
-    while (generate.status !== "succeeded" && generate.status !== "failed") {
-        new Promise((resolve) => setTimeout(resolve, 250));
+    return await wait(result);
+}
 
-        const job = await prodia.getJob(generate.job);
-
-        if (job.status === "succeeded") {
-            console.log(job);
-            break;
-        }
-    }
-})()
+input("").then(console.log)
 ```
 
-### Preview
-![transform](https://raw.githubusercontent.com/unburn/prodia.js/main/assets/transform.png)
+> Know more about transform parameters **[here](https://docs.prodia.com/reference/transform)**
 
-## **Control Net**
+![Transform Example](https://raw.githubusercontent.com/unburn/assets/main/prodia/transform-example.png)
 
+## SDXL Generation
 ```js
 const { Prodia } = require("prodia.js");
-const prodia = new Prodia("x-x-x-x-x"); // API KEY HERE
+const { generateImageSDXL, wait } = Prodia("x-x-x-x-x");
 
-(async () => {
-    const generate = await prodia.controlNet({
-        controlnet_model: "control_v11p_sd15_scribble [d4ba51ff]",
-        controlnet_module: "canny",
-        imageUrl: "https://i.pinimg.com/originals/f1/8c/e9/f18ce952d2103517ba844de709c8ba92.jpg",
-        prompt: "cloudy sky background lush landscape house and trees illustration concept art anime key visual trending pixiv fanbox by wlop and greg rutkowski and makoto shinkai and studio ghibli",
-        cfg_scale: 10
+const input = async (prompt) => {
+    const result = await generateImageSDXL({
+        prompt: prompt,
+        model: "sd_xl_base_1.0.safetensors [be9edd61]",
+        style_preset: "photographic"
     })
 
-    while (generate.status !== "succeeded" && generate.status !== "failed") {
-        new Promise((resolve) => setTimeout(resolve, 250));
+    return await wait(result);
+}
 
-        const job = await prodia.getJob(generate.job);
-
-        if (job.status === "succeeded") {
-            console.log(job);
-            break;
-        }
-    }
-})()
+input("a giant monster hybrid of dragon and spider, in dark dense foggy forest").then(console.log)
 ```
 
-### Preview
-![controlnet](https://raw.githubusercontent.com/unburn/prodia.js/main/assets/ctrlnet.png)
+> **Tip**: Use **getSDXLModels()** to get the list or all SDXL models, same for other.
+> 
+> Know more about sdxl parameters **[here](https://docs.prodia.com/reference/sdxl-generate)**
 
-## **SDXL**
+![SDXL Example](https://raw.githubusercontent.com/unburn/assets/main/prodia/sdxl-example.png)
 
+## Face Swap
 ```js
 const { Prodia } = require("prodia.js");
-const prodia = new Prodia("x-x-x-x-x"); // API KEY HERE
+const { faceSwap, wait } = Prodia("x-x-x-x-x");
 
-(async () => {
-    const generate = await prodia.SDXL({
-        model: "dreamshaperXL10_alpha2.safetensors [c8afe2ef]",
-        prompt: "ethereal fantasy concept art of sorceress casting spells. magnificent, celestial, ethereal, painterly, epic, majestic, magical, fantasy art, cover art, dreamy",
-        negative_prompt: "photographic, realistic, realism, 35mm film, dslr, cropped, frame, text, deformed, glitch, noise, noisy, off-center, deformed, cross-eyed, closed eyes, bad anatomy, ugly, disfigured, sloppy, duplicate, mutated, black and white",
-        sampler: "DPM++ 2M Karras",
-        cfg_scale: 9,
-        steps: 30
-    })
-
-    while (generate.status !== "succeeded" && generate.status !== "failed") {
-        new Promise((resolve) => setTimeout(resolve, 250));
-
-        const job = await prodia.getJob(generate.job);
-
-        if (job.status === "succeeded") {
-            console.log(job);
-            break;
-        }
-    }
-})()
-```
-
-### Preview
-![SDXL](https://raw.githubusercontent.com/unburn/prodia.js/main/assets/sdxl.png)
-
-## **Face Swap**
-```js
-const { Prodia } = require("prodia.js");
-const prodia = new Prodia("x-x-x-x-x"); // API KEY HERE
-
-(async () => {
-    const generate = await prodia.faceSwap({
-        sourceUrl: "https://api.time.com/wp-content/uploads/2014/10/4568715041.jpg",
-        targetUrl: "https://www.baltana.com/files/wallpapers-14/Captain-America-Wallpapers-Full-HD-37890.jpg",
+const input = async ({ sourceUrl, targetUrl }) => {
+    const result = await faceSwap({
+        sourceUrl,
+        targetUrl,
     });
 
-    while (generate.status !== "succeeded" && generate.status !== "failed") {
-        new Promise((resolve) => setTimeout(resolve, 250));
+    return await wait(result);
+}
 
-        const job = await prodia.getJob(generate.job);
-
-        if (job.status === "succeeded") {
-            console.log(job);
-            break;
-        }
-    }
-})()
+input({
+    sourceUrl: "https://images.prodia.xyz/fe8bd9b3-c3e6-4c7c-bef2-4038fac54dec.png",
+    targetUrl: "https://images.prodia.xyz/2a3ea80c-fd56-49a2-be83-180a3fdc5abe.png"
+}).then(console.log)
 ```
 
-### Preview
-![FaceSwap](https://raw.githubusercontent.com/unburn/prodia.js/main/assets/faceswap.png)
+> **Tip**: Here you may get confused about **sourceUrl** & **targetUrl**, targetUrl is main face image and sourceUrl is the face image your want to put on targetUrl.
+> 
+> Know more about faceswap parameters **[here](https://docs.prodia.com/reference/faceswap)**
+
+![Face Swap Example](https://raw.githubusercontent.com/unburn/assets/main/prodia/faceswap-example.png)
 
 ## Face Restore
 ```js
 const { Prodia } = require("prodia.js");
-const prodia = new Prodia("x-x-x-x-x"); // API KEY HERE
+const { faceRestore, wait } = Prodia("x-x-x-x-x");
 
-(async () => {
-    const generate = await prodia.faceRestore({
-        imageUrl: "https://images.prodia.xyz/73f3b014-8bb6-4c81-821c-379734790ffe.png"
-    })
+const input = async (imageUrl) => {
+    const result = await faceRestore({
+        imageUrl
+    });
 
-    while (generate.status !== "succeeded" && generate.status !== "failed") {
-        new Promise((resolve) => setTimeout(resolve, 250));
+    return await wait(result);
+}
 
-        const job = await prodia.getJob(generate.job);
-
-        if (job.status === "succeeded") {
-            console.log(job);
-            break;
-        }
-    }
-})()
-```
-### Preview
-![FaceRestore](https://raw.githubusercontent.com/unburn/prodia.js/main/assets/facerestore.png)
-
-## **Upscale**
-```js
-const { Prodia } = require("prodia.js");
-const prodia = new Prodia("x-x-x-x-x"); // API KEY HERE
-
-(async () => {
-    const generate = await prodia.upscale({
-        imageUrl: "https://s6.imgcdn.dev/ZEQqw.jpg",
-        resize: 4
-    })
-
-    while (generate.status !== "succeeded" && generate.status !== "failed") {
-        new Promise((resolve) => setTimeout(resolve, 250));
-
-        const job = await prodia.getJob(generate.job);
-
-        if (job.status === "succeeded") {
-            console.log(job);
-            break;
-        }
-    }
-})()
+input("https://images.prodia.xyz/2913f270-3511-4bec-96f3-4ad0b84c1230.png").then(console.log)
 ```
 
-# **Help**
-If you need help or want some features to be added, join our official **[Discord](https://discord.gg/qDysF95NWh)** community & the official **[Prodia](https://discord.gg/22s88bSe6h)** server.
+> Know more about face restore parameters **[here](https://docs.prodia.com/reference/facerestore)**
+
+![Face Restore Example](https://raw.githubusercontent.com/unburn/assets/main/prodia/facerestore-example.png)
+
+***
+
+There are more features, like **Inpainting**, **ControlNet** & **Upscale** etc.
+
+# Support
+Our discord **[community](https://discord.gg/MmweKCgU5f)** & prodia official **[server](https://discord.gg/vGu6KvsRJ2)**
